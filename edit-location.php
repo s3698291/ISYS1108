@@ -128,7 +128,7 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
             <input type="hidden" id="id" name="id">
 
-            <div id="LocationInfo" class="<?php echo isset($update_record) && $update_error == TRUE ? 'd-block' : ''; ?> ">
+            <div id="LocationInfo" class="<?php echo isset($update_error) && $update_error == TRUE ? 'd-block' : ''; ?> ">
                 <div class="form-group row">
                     <label for="LocationName" class="col-sm-2 col-form-label">Location Name</label>
                 
