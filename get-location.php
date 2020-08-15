@@ -7,7 +7,7 @@ require_once 'config.php';
 }
 */
 
-$get_location_sql = 'SELECT LocationName, Coordinate, Description, MinTime FROM Location WHERE LocationID= ?';
+$get_location_sql = "SELECT location_name, coordinate, description, minimum_time FROM m02_location WHERE location_id= ?";
 
 $location_stmt = mysqli_prepare($conn, $get_location_sql);
 

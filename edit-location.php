@@ -42,9 +42,9 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
 
         // Update location information to database
         if (empty($location_name_error) && empty($location_coordinate_error) && empty($location_min_time_error) && empty($location_description_error)) {
-            $update_location_sql = 'UPDATE Location SET LocationName="' . $location_name . '", Coordinate="' . $location_coordinate . '", MinTime=' . $location_min_time . ', Description="' .$location_description . '" WHERE LocationID=' . $id;
+            $update_location_sql = 'UPDATE m02_location SET location_name="' . $location_name . '", coordinate="' . $location_coordinate . '", minimum_time=' . $location_min_time . ', description="' .$location_description . '" WHERE location_id=' . $id;
         
-            if(mysql_query($conn, $update_location_sql)) {
+            if(mysqli_query($conn, $update_location_sql)) {
                 $update_record = TRUE;
 
                 unset($_POST);
@@ -110,14 +110,14 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
                 <option value="" selected>Select Location</option>
 
                 <?php 
-                $get_location_sql = 'SELECT * FROM Location WHERE is_expired = 0 ORDER BY LocationName ASC';
+                $get_location_sql = 'SELECT * FROM m02_location WHERE is_deleted = 0 ORDER BY location_name ASC';
                 $get_location = mysqli_query($conn, $get_location_sql);
 
                 if (mysqli_num_rows($get_location) > 0) {
                     while ($location = mysqli_fetch_assoc($get_location)) {
-                        $selected_location = (isset($_POST['id']) && $_POST['id'] == $location['LocationID']) ? ' selected="selected"' : '';
+                        $selected_location = (isset($_POST['id']) && $_POST['id'] == $location['location_id']) ? ' selected="selected"' : '';
 
-                        echo '<option value="' . $location['LocationID'] . '"' . $selected_location . '>' . $location['LocationName'] . '</option>';
+                        echo '<option value="' . $location['location_id'] . '"' . $selected_location . '>' . $location['location_name'] . '</option>';
                     }
                 }
                 ?>
@@ -176,10 +176,9 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
                         </p>
                     </div>
                 </div>
-                
-                <button id = "UpdateButton" type="submit" class="btn btn-primary btn-block">Submit</button>
             </div>
-
+                
+            <button id="UpdateButton" type="submit" class="btn btn-primary btn-block">Submit</button>
         </form>
     </div>
 
@@ -189,7 +188,7 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
     <script>
         document.getElementById('UpdateLocation').onload = function hideLocationInfo() {
             document.getElementById('LocationInfo').style.display = 'none';
-            document.getElementByID('UpdateButton').disabled = true;
+            document.getElementById('UpdateButton').disabled = true;
         }
 
         function getLocationInfo(id) {
@@ -198,7 +197,7 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
             xhttpLocation = new XMLHttpRequest();
 
             xhttpLocation.onreadystatechange = function() {
-                if (this.readystate == 4 && this.status == 200) {
+                if (this.readyState == 4 && this.status == 200) {
                     ResultLocation = this.responseText;
                     ParsedLocation = JSON.parse(ResultLocation);
                     LocationInfo = ParsedLocation[0];

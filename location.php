@@ -37,6 +37,30 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
         } else {
             $location_description = (trim($_POST['Description']));
         }
+
+        // Send location information to database
+        if (empty($location_name_error) && empty($location_coordinate_error) && empty($location_min_time_error) && empty($location_description_error)) {
+            $addLocationSql = "INSERT INTO m02_location (location_name, coordinate, minimum_time, description) VALUES ('" . $location_name . "', '" . $location_coordinate . "', " . $location_min_time . ", '" . $location_description . "')";
+        
+            if ($stmt = mysqli_prepare($conn, $addLocationSql)) {
+                mysqli_stmt_bind_param($stmt, 'ssis', $param_location_name, $param_coordinate, $param_minimum_time, $param_description);
+                
+                $param_location_name = $location_name;
+                $param_coordinate = $location_coordinate;
+                $param_minimum_time = $location_min_time;
+                $param_description = $location_description;
+
+                if (mysqli_stmt_execute($stmt)) {
+                    $location_Added = TRUE;
+                    unset($_POST);
+                } else {
+                    echo 'Error: ' . $addLocationSql . '<br/>' .mysqli_error($conn);
+                }
+                
+                
+            }
+
+        } 
     }
 //}
 ?>
@@ -69,7 +93,7 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
 
     <div class="container">
         <?php 
-        if ($locationAdded === TRUE) {
+        if ($location_Added === TRUE) {
             echo '
             <div class="alert alert-success my-4 alert-dismissable fade show" role="alert">
             Location added successfully.
@@ -131,7 +155,7 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
                     </div>
                 </div>
                 
-                <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" name="submit" class="btn btn-primary btn-block">Submit</button>
             </div>
         </form>
     </div>
