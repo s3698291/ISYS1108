@@ -29,9 +29,11 @@
 
                     <a class="dropdown-item" href="edit-location.php">Edit Existing Location</a>
 
+                    <a class="dropdown-item" href="copy-location.php">Copy Existing Location</a>
+
                     <hr>
 
-                    <a class="dropdown-item" href="delete-location.php">Delete Existing Location</a>
+                    <a class="dropdown-item" href="remove-location.php">Delete Existing Location</a>
                 </div>
             </li>
 
