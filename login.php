@@ -1,3 +1,80 @@
+<?php 
+session_start();
+require_once 'config.php';
+
+$email = $password = '';
+$email_error = $password_error = '';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+    //Email: Validate and submit
+    if (empty(trim($_POST['email']))) {
+        $email_error = "Please enter an email adddress.";
+    } else {
+        $email = trim($_POST['email']);
+    }
+
+    //Password: Validate and submit
+    if (empty(trim($_POST['password']))) {
+        $password_error = "Please enter a password.";
+    } else {
+        $password = trim($_POST['password']);
+    }
+
+    //Send login information to database
+    if (empty($email_error) && empty($password_error)) {
+        // $login_sql = '';
+
+        if ($login_stmt = mysqli_prepare($conn, $login_sql)) {
+            mysqli_stmt_bind_param($login_stmt, 's', $param_email);
+
+            $param_email = $email;
+
+            if (mysqli_stmt_execute($login_stmt)) {
+                mysqli_stmt_store_result($login_stmt);
+
+                if (mysqli_stmt_num_rows($login_stmt) == 1) {
+                    mysqli_stmt_bind_result($login_stmt, $account_id, $account_password, $account_role, $account_deactivate);
+
+                    if (mysqli_stmt_fetch($login_stmt)) {
+                        if ($account_deactivate == 1) {
+                            $login_error = "This account has been deactivated by the Admin.";
+                        } else {
+                            if (password_verify($password, $account_password)) {
+                                session_start();
+
+                                $_SESSION['loggedIn'] == TRUE;
+                                $_SESSION['accountId'] == $account_id;
+
+                                if ($account_role == 1) { 
+                                    $_SESSION['role'] = 'Admin';
+                                } elseif ($account_role == 2) {
+                                    $_SESSION['role'] = 'Assistant';
+                                }
+
+                                header('location: tour.php');
+
+                                unset($_POST);
+
+                            } else {
+                                $password_error = "The password you entered is incorrect.";
+                            }
+                        }
+                    }
+
+                } else {
+                    $email_error = "No account was found with the entered email address.";
+                }
+
+            } else {
+                echo 'Error: ' . $login_sql . '<br/>' . mysqli_error($conn);
+            }
+        }
+
+        mysqli_stmt_close($login_stmt);
+    }
+}
+?>
+
 <html>
 
 <head>
@@ -26,40 +103,37 @@
     <h1 class="text-center mt-3">Login</h1>
 
     <div class="container">
-        <form action="/tour-management-system/login.php" method="POST">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
 
-            <!-- Email Address Form -->
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email Address" value="">
+                <input type="email" class="form-control <?php echo (!empty($email_error)) ? 'border border-danger' : ''; ?>" id="email" name="email" placeholder="Enter Email Address" value="">
 
                 <div>
                     <p class="text-danger">
+                        <?php echo $email_error; ?>
                     </p>
                 </div>
             </div>
-            <!-- Email Address Form -->
 
-
-            <!-- Password Form -->
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" value="">
+                <input type="password" class="form-control <?php echo (!empty($password_error)) ? 'border border-danger' : ''; ?>" id="password" name="password" placeholder="Enter Password" value="">
 
                 <div>
-                    <p class="text-danger"></p>
+                    <p class="text-danger">
+                        <?php echo $password_error; ?>
+                    </p>
                 </div>
             </div>
-            <!-- Password Form -->
 
-
-            <!-- Submit -->
             <div>
-                <p class="text-danger"></p>
+                <p class="text-danger">
+                    <?php echo $login_error; ?>
+                </p>
             </div>
                 
             <button type="submit" class="btn btn-primary btn-block">Login</button>
-            <!-- Submit -->
 
         </form>
     </div>
@@ -69,3 +143,5 @@
 </body>
 
 </html>
+
+<?php mysqli_close($conn); ?>

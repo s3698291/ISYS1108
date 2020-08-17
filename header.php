@@ -9,15 +9,15 @@
                 <a class="nav-link dropdown-toggle" href="#" id="navbarLocation" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tour Management</a>
 
                 <div class="dropdown-menu" aria-labelledby="navbarLocation">
-                    <a class="dropdown-item" href="/tour-management-system/tour.php">Add New Tour</a>
+                    <a class="dropdown-item" href="#">Add New Tour</a>
 
-                    <a class="dropdown-item" href="/tour-management-system/modify-tour.php">Edit Existing Tour</a>
+                    <a class="dropdown-item" href="#">Edit Existing Tour</a>
 
                     <hr>
 
-                    <a class="dropdown-item" href="/tour-management-system/tour-type.php">Add New Tour Type</a>
+                    <a class="dropdown-item" href="#">Add New Tour Type</a>
 
-                    <a class="dropdown-item" href="/tour-management-system/list-tour-type.php">View Existing Tour Type</a>
+                    <a class="dropdown-item" href="#">View Existing Tour Type</a>
                 </div>
             </li>
 
