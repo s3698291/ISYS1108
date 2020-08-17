@@ -41,6 +41,40 @@
             <li class="nav-item">
                 <a class="nav-link" href="login.php">Login</a>
             </li> 
+
+            <!-- If User logs in, header changes -->
+            <?php 
+            if (!isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] != TRUE) {
+                echo '
+                <li class="nav-item">
+                    <a class="nav-link" href="login.php">Login</a>
+                </li>
+                ';
+            
+            } elseif (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] == TRUE) {
+                echo '
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarAccount" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account Management</a>
+                
+                    <div class="dropdown-menu" aria-labelledby="navbarAccount">
+                ';
+
+                if (isset($_SESSION['role']) && $_SESSION['role'] == 'Admin') {
+                    echo '
+                    <a class="dropdown-item" href="view-account.php">View Account</a>
+
+                    <a class="dropdown-item" href="register.php">Register Account</a>
+                    ';
+                }
+
+                echo '
+                    <a class="dropdown-item" href="logout.php">Logout</a>
+                    </div>
+                </li>
+                ';
+           
+            } 
+            ?>
         </ul>
     </div>
 </nav>
