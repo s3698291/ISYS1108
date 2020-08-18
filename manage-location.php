@@ -1,16 +1,16 @@
-<?php
+<?php 
 session_start();
 require_once 'config.php';
 
-$location_id = "";
-$location_id_error = "";
+$location_id = $location_name = $location_coordinate = $location_min_time = $location_description = '';
+$location_id_error = $location_name_error = $location_coordinate_error = $location_min_time_error = $location_description_error = '';
 
 ?>
 
 <html>
 
 <head>
-    <title>Remove Location | Tour Management</title>
+    <title>Manage Location | Tour Management</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -27,22 +27,20 @@ $location_id_error = "";
     <link rel="stylesheet" type="text/css" href="style/style.css?<?php echo date('l jS \of F Y h:i:s A'); ?>">
 </head>
 
-<body id="CopyLocation">
+<body>
     <?php include 'header.php'; ?>
 
-    <!-- Remove Location Field -->
-    <h1 class="text-center mt-3">Remove Location</h1>
+    <!-- Manage Location field -->
+
+    <h1 class="text-center mt-3"> Manage Location </h1>
 
     <div class="container">
 
     </div>
 
-    <!-- Remove Location Field -->
-
+    <!-- Manage Location field -->
 
     <?php include 'footer.php'; ?>
 </body>
 
 </html>
-
-<?php mysqli_close($conn); ?>
