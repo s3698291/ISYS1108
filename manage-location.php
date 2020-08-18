@@ -33,8 +33,33 @@ $location_id_error = $location_name_error = $location_coordinate_error = $locati
     <!-- Manage Location field -->
 
     <h1 class="text-center mt-3"> Manage Locations </h1>
+ 
     <div class="container">
-
+        <div class="table-body">
+            <table id="manageTable" class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Location Name</th>
+                <th>Coordinate</th>
+                <th>Min. Time(min)</th>
+                <th>Description</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>National Gallery Victoria</td>
+                <td>x: 6.1912° y: 106.7675°</td>
+                <td>20</td>
+                <td>testing..</td>
+                <td>
+                    <button type="button" class="btn btn-outline-dark">edit</button>
+                    <button type="button" class="btn btn-outline-dark">copy</button>
+                    <button type="button" class="btn btn-outline-dark">delete</button>
+                </td>
+              </tr>
+            </tbody>
+            </table>
         </div>
     </div>
 
