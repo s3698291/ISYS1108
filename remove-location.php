@@ -34,6 +34,15 @@ $location_id_error = "";
     <h1 class="text-center mt-3">Remove Location</h1>
 
     <div class="container">
+        <form method="POST">
+            <label for="locationId">Location</label>
+
+            <select class="form-control <?php echo (!empty($tour_id_err)) ? 'border border-danger' : ''; ?>" id="locationId" name="locationId">
+                <option value="" selected>Select location</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary btn-block">Delete Location</button>
+        </form>
 
     </div>
 
