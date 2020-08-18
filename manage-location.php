@@ -32,10 +32,10 @@ $location_id_error = $location_name_error = $location_coordinate_error = $locati
 
     <!-- Manage Location field -->
 
-    <h1 class="text-center mt-3"> Manage Location </h1>
-
+    <h1 class="text-center mt-3"> Manage Locations </h1>
     <div class="container">
 
+        </div>
     </div>
 
     <!-- Manage Location field -->
