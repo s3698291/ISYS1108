@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     //Send login information to database
     if (empty($email_error) && empty($password_error)) {
-        // $login_sql = '';
+        $login_sql = '';
 
         if ($login_stmt = mysqli_prepare($conn, $login_sql)) {
             mysqli_stmt_bind_param($login_stmt, 's', $param_email);
