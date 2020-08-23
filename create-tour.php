@@ -2,15 +2,12 @@
 session_start();
 require_once 'config.php';
 
-$name = $email = $role = $password = $deactivate = "";
-$name_eror = $email_error = $role_error = $password_error = $confirm_password_error = $deactivate_error = "";
-
 ?>
 
 <html>
 
 <head>
-    <title>View Account | Tour Management</title>
+    <title>Create Tour | Tour Management</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -30,32 +27,38 @@ $name_eror = $email_error = $role_error = $password_error = $confirm_password_er
 <body>
     <?php include 'header.php'; ?>
 
-    <!-- Register Account field -->
-
-    <h1 class="text-center mt-3"> View Account </h1>
+    <h1 class="text-center mt-3">Create Tour</h1>
 
     <div class="container">
-        <form method="POST">
-            <label for="locationId">Location</label>
+        <form method="POST" enctype="multipart/form-data">
+            <!--Tour Name-->
+            <div class="form-group">
+                <label for="tname">Tour Name</label>
+                <input type="text" class="form-control" id="tname" name="tname" placeholder="Tour Name" value="<?php echo $_POST['tname']; ?>">
+            </div>
 
-            <select class="form-control <?php echo (!empty($tour_id_err)) ? 'border border-danger' : ''; ?>" id="locationId" name="locationId">
-                <option value="" selected>Select location</option>
-            </select>
+            <!--Tour Type-->
+            <div class="form-group">
+                <label for="ttype">Tour Type</label>
+                <input type="text" class="form-control" id="ttype" name="ttype" placeholder="Tour Type" value="<?php echo $_POST['ttype']; ?>">
+            </div>
 
-            <button type="submit" class="btn btn-primary btn-block">Delete Location</button>
+            <!--Location 1-->
+            <div class="form-group">
+                <label for="location1">Location 1</label>
+                <input type="text" class="form-control" id="location1" name="location1" placeholder="Location 1" value="<?php echo $_POST['location1']; ?>">
+            </div>
+
+
+
         </form>
-
     </div>
 
-    <!-- Register Account field -->
+
 
     <?php include 'footer.php'; ?>
 </body>
 
-<<<<<<< HEAD:remove-location.php
 </html>
 
 <?php mysqli_close($conn); ?>
-=======
-</html>
->>>>>>> jason:view-account.php
