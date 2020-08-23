@@ -35,15 +35,6 @@ $name_eror = $email_error = $role_error = $password_error = $confirm_password_er
     <h1 class="text-center mt-3"> View Account </h1>
 
     <div class="container">
-        <form method="POST">
-            <label for="locationId">Location</label>
-
-            <select class="form-control <?php echo (!empty($tour_id_err)) ? 'border border-danger' : ''; ?>" id="locationId" name="locationId">
-                <option value="" selected>Select location</option>
-            </select>
-
-            <button type="submit" class="btn btn-primary btn-block">Delete Location</button>
-        </form>
 
     </div>
 
@@ -52,10 +43,4 @@ $name_eror = $email_error = $role_error = $password_error = $confirm_password_er
     <?php include 'footer.php'; ?>
 </body>
 
-<<<<<<< HEAD:remove-location.php
 </html>
-
-<?php mysqli_close($conn); ?>
-=======
-</html>
->>>>>>> jason:view-account.php
