@@ -9,7 +9,7 @@
                 <a class="nav-link dropdown-toggle" href="#" id="navbarLocation" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tour Management</a>
 
                 <div class="dropdown-menu" aria-labelledby="navbarLocation">
-                    <a class="dropdown-item" href="#">Add New Tour</a>
+                    <a class="dropdown-item" href="tour.php">Add New Tour</a>
 
                     <a class="dropdown-item" href="#">Edit Existing Tour</a>
 
