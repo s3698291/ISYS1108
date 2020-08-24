@@ -5,10 +5,36 @@ require_once 'config.php';
 $location_name = $location_coordinate = $location_min_time = $location_description = '';
 $location_name_error = $location_coordinate_error = $location_min_time_error = $location_description_error = '';
 
-/*if (!isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] != TRUE) {
-    header('location: login.php');
+if (isset($_GET['id']) && !empty($_GET['id'])) {
+    $get_location_id = $_GET['id'];
 
-} elseif (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] == 'TRUE') {*/
+    $get_location_information_sql = 'SELECT location_name, coordinate, minimum_time, description FROM m02_location WHERE location_id = ?';
+    
+    if ($get_location_information_stmt = mysqli_prepare($conn, $get_location_information_sql)) {
+        mysqli_stmt_bind_param($get_location_information_stmt, 'i', $param_location_id);
+
+        $param_location_id = $get_location_id;
+
+        if (mysqli_stmt_execute($get_location_information_stmt)) {
+            mysqli_stmt_store_result($get_location_information_stmt);
+
+            if (mysqli_stmt_num_rows($get_location_information_stmt) > 0) {
+                mysqli_stmt_bind_result($get_location_information_stmt, $saved_location_name, $saved_location_coordinate, $saved_location_minimum_time, $saved_location_description);
+
+                mysqli_stmt_fetch($get_location_information_stmt);
+
+            } else {
+                $_SESSION['m02_location_not_found'] = TRUE;
+                header('location: manage-location');
+
+            }
+        }
+    }
+
+    mysqli_stmt_close($get_location_information_stmt);
+
+} else {
+    // Main functionality of Edit Location
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $id = $_POST['id'];
 
@@ -45,7 +71,8 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
             $update_location_sql = 'UPDATE m02_location SET location_name="' . $location_name . '", coordinate="' . $location_coordinate . '", minimum_time=' . $location_min_time . ', description="' .$location_description . '" WHERE location_id=' . $id;
         
             if(mysqli_query($conn, $update_location_sql)) {
-                $update_record = TRUE;
+                $_SESSION['m02_edit_location_success'] = TRUE;
+                header('location: manage-location');
 
                 unset($_POST);
             } else {
@@ -55,8 +82,11 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
         } else {
             $update_error = TRUE;
         }
+    } else {
+        header('location: manage-location');
+
     }
-//}
+}
 
 ?>
 
@@ -88,52 +118,16 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
 
     <div class="container">
 
-        <!-- Informs user if location edited successfully -->
-        <?php
-        if ($update_record === TRUE) {
-            echo '
-            <div class="alert alert-success my-4 alert-dismissible fade show" role="alert">
-            Location edited successfully.
-
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-
-            </div>
-            ';
-        }
-        ?>
-
-        <!-- User select location (retrieved from database) -->
-        <div class="py-4">
-            <select class="form-control" id="EditLocation" name="EditLocation" onchange="getLocationInfo(this.value);">
-                <option value="" selected>Select Location</option>
-
-                <?php 
-                $get_location_sql = 'SELECT * FROM m02_location WHERE is_deleted = 0 ORDER BY location_name ASC';
-                $get_location = mysqli_query($conn, $get_location_sql);
-
-                if (mysqli_num_rows($get_location) > 0) {
-                    while ($location = mysqli_fetch_assoc($get_location)) {
-                        $selected_location = (isset($_POST['id']) && $_POST['id'] == $location['location_id']) ? ' selected="selected"' : '';
-
-                        echo '<option value="' . $location['location_id'] . '"' . $selected_location . '>' . $location['location_name'] . '</option>';
-                    }
-                }
-                ?>
-            </select>
-        </div>
-
         <!-- Form shows only when user selects location -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-            <input type="hidden" id="id" name="id">
+            <input type="hidden" id="id" name="id" value="<?php echo !empty($_POST['id']) ? $_POST['id'] : $_GET['id']; ?>">
 
             <div id="LocationInfo" class="<?php echo isset($update_error) && $update_error == TRUE ? 'd-block' : ''; ?> ">
                 <div class="form-group row">
                     <label for="LocationName" class="col-sm-2 col-form-label">Location Name</label>
                 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control <?php echo (!empty($location_name_error)) ? 'border border-danger' : ''; ?>" id="LocationName" name="LocationName" placeholder="Location Name" value="<?php echo $_POST['LocationName']; ?>">
+                        <input type="text" class="form-control <?php echo (!empty($location_name_error)) ? 'border border-danger' : ''; ?>" id="LocationName" name="LocationName" placeholder="Location Name" value="<?php echo !empty($_POST['LocationName']) ? $_POST['LocationName'] : $saved_location_name; ?>">
                     
                         <p class="text-danger">
                             <?php echo $location_name_error; ?>
@@ -145,7 +139,7 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
                     <label for="Coordinate" class="col-sm-2 col-form-label">Coordinate</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control <?php echo (!empty($location_coordinate_error)) ? 'border border-danger' : ''; ?>" id="Coordinate" name="Coordinate" placeholder="Enter Coordinate" value="<?php echo $_POST['Coordinate']; ?>">
+                        <input type="text" class="form-control <?php echo (!empty($location_coordinate_error)) ? 'border border-danger' : ''; ?>" id="Coordinate" name="Coordinate" placeholder="Enter Coordinate" value="<?php echo !empty($_POST['Coordinate']) ? $_POST['Coordinate'] : $saved_location_coordinate; ?>">
                     
                         <p class="text-danger">
                             <?php echo $location_coordinate_error; ?>
@@ -157,7 +151,7 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
                     <label for="MinTime" class="col-sm-2 col-form-label">Minimum Time</label>
                     
                     <div class="col-sm-10">
-                        <input type="number" class="form-control <?php echo (!empty($location_min_time_error)) ? 'border border-danger' : ''; ?>" id="MinTime" name="MinTime" placeholder="Enter Minimum Time" value="<?php echo $_POST['MinTime']; ?>">
+                        <input type="number" class="form-control <?php echo (!empty($location_min_time_error)) ? 'border border-danger' : ''; ?>" id="MinTime" name="MinTime" placeholder="Enter Minimum Time" value="<?php echo !empty($_POST['MinTime']) ? $_POST['MinTime'] : $saved_location_minimum_time; ?>">
                     
                         <p class="text-danger">
                             <?php echo $location_min_time_error; ?>
@@ -169,7 +163,7 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
                     <label for="Description" class="col-sm-2 col-form-label">Description</label>
 
                     <div class="col-sm-10">
-                        <textarea class="form-control <?php echo (!empty($location_description_error)) ? 'border border-danger' : ''; ?>" id="Description" name="Description" placeholder="Enter Description" rows="10" cols="30"><?php echo $_POST['Description']; ?></textarea>
+                        <textarea class="form-control <?php echo (!empty($location_description_error)) ? 'border border-danger' : ''; ?>" id="Description" name="Description" placeholder="Enter Description" rows="10" cols="30"><?php echo !empty($_POST['Description']) ? $_POST['Description'] : $saved_location_description; ?></textarea>
                     
                         <p class="text-danger">
                             <?php echo $location_description_error; ?>
@@ -183,42 +177,6 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
     </div>
 
     <!-- Edit Location Field -->
-
-    <!-- JS Retrieve Location Info -->
-    <script>
-        document.getElementById('UpdateLocation').onload = function hideLocationInfo() {
-            document.getElementById('LocationInfo').style.display = 'none';
-            document.getElementById('UpdateButton').disabled = true;
-        }
-
-        function getLocationInfo(id) {
-            var xhttpLocation, ResultLocation, ParsedLocation, LocationInfo;
-
-            xhttpLocation = new XMLHttpRequest();
-
-            xhttpLocation.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    ResultLocation = this.responseText;
-                    ParsedLocation = JSON.parse(ResultLocation);
-                    LocationInfo = ParsedLocation[0];
-
-                    document.getElementById('LocationInfo').style.display = 'block';
-                    document.getElementById('UpdateButton').disabled = false;
-
-                    document.getElementById('id').value = id;
-
-                    document.getElementById('LocationName').value = LocationInfo.LocationName;
-                    document.getElementById('Coordinate').value = LocationInfo.Coordinate;
-                    document.getElementById('MinTime').value = LocationInfo.MinTime;
-                    document.getElementById('Description').innerHTML = LocationInfo.Description;
-                }
-            };
-
-            xhttpLocation.open('GET', 'get-location.php?id=' + id, true);
-            xhttpLocation.send();
-        }
-    </script>
-    <!-- JS Retrieve Location Info -->
 
     <?php include 'footer.php'; ?>
 </body>

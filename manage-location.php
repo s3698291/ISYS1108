@@ -85,6 +85,34 @@ require_once 'config.php';
     <div class="container">
         <!-- Recover/Remove/Copy/Edit Location Validation -->
         <?php
+        if ($_SESSION['m02_edit_location_success'] === TRUE) {
+            echo '
+            <div class="alert alert-success my-4 alert-dismissible fade show" role="alert">
+                Location edited successfully.
+
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            ';
+            
+            unset($_SESSION['m02_edit_location_success']);
+        }
+
+        if ($_SESSION['m02_location_not_found'] === TRUE) {
+            echo '
+            <div class="alert alert-warning my-4 alert-dismissible fade show" role="alert">
+                Location not found.
+
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            ';
+            
+            unset($_SESSION['m02_location_not_found']);
+        }
+
         if ($recovered === TRUE){
           echo '
           <div class="alert alert-success my-4 alert-dismissable fade show" role="alert">
@@ -124,7 +152,7 @@ require_once 'config.php';
           ';
         }
         
-        $get_location_sql = 'SELECT * FROM m02_location ORDER BY location_id ASC';
+        $get_location_sql = 'SELECT * FROM m02_location ORDER BY is_deleted, location_id';
         $get_location = mysqli_query($conn, $get_location_sql);
 
         if (mysqli_num_rows($get_location) > 0) {
@@ -164,8 +192,11 @@ require_once 'config.php';
                     ';
                 } elseif ($location_list['is_deleted'] == 0) {
                     echo '
-                    <a class="btn btn-primary" href="manage-location?action=remove&id=' . $location_list['location_id'] . '">Remove</a>
-                <a class="btn btn-primary" href="manage-location?action=copy&location_name=' . $location_list['location_name'] . '&coordinate=' . htmlspecialchars($location_list['coordinate']) . '&minimum_time=' . $location_list['minimum_time'] . '&description=' . $location_list['description'] . '">Copy</a>
+                    <a class="btn btn-primary" href="edit-location?id=' . $location_list['location_id'] . '">Edit</a>
+
+                    <a class="btn btn-primary" href="manage-location?action=copy&location_name=' . $location_list['location_name'] . '&coordinate=' . htmlspecialchars($location_list['coordinate']) . '&minimum_time=' . $location_list['minimum_time'] . '&description=' . $location_list['description'] . '">Copy</a>
+
+                    <a class="btn btn-primary" href="manage-location?action=remove&id=' . $location_list['location_id'] . '">Remove</a>                    
                     ';
                 } 
                     

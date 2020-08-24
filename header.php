@@ -15,7 +15,7 @@
 
                     <hr>
 
-                    <a class="dropdown-item" href="#">Add New Tour Type</a>
+                    <a class="dropdown-item" href="tour-type.php">Add New Tour Type</a>
 
                     <a class="dropdown-item" href="#">View Existing Tour Type</a>
                 </div>
@@ -26,8 +26,6 @@
 
                 <div class="dropdown-menu" aria-labelledby="navbarLocation">
                     <a class="dropdown-item" href="location.php">Add New Location</a>
-
-                    <a class="dropdown-item" href="edit-location.php">Edit Existing Location</a>
 
                     <a class="dropdown-item" href="manage-location.php">Manage Existing Location</a>
                 </div>

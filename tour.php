@@ -21,7 +21,7 @@ $tour_name_error = $tour_type_error = $location1_error = "";
         if (empty(trim($_POST['TourType']))) {
             $tour_type_error = "Please select a tour type";
         } else {
-            $tour_type = (trim($_POST['TourType']));
+            $tour_type = ($_POST['TourType']);
         }
 
         // Location 1: Validate and submit
@@ -144,16 +144,16 @@ $tour_name_error = $tour_type_error = $location1_error = "";
                 <select class="form-control <?php echo (!empty($tour_type_error)) ? 'border border-danger' : ''; ?>" id="TourType" name="TourType">
                     <option value="" selected> Select Tour Type</option>
 
-                    <!-- Show dropdown list from Location table-->
+                    <!-- Show dropdown list from Tour Type table-->
                     <?php 
-                    $get_tour_type_sql = "SELECT * FROM WHERE is_deleted = 0 ORDER BY Tour_Type ASC";
+                    $get_tour_type_sql = "SELECT * FROM m02_type WHERE is_deleted = 0 ORDER BY tour_type ASC";
                     $get_tour_type = mysqli_query($conn, $get_tour_type_sql);
 
                     if (mysqli_num_rows($get_tour_type) > 0) {
                         while ($tour_type = mysqli_fetch_assoc($get_tour_type)) {
-                            $select_type = (isset($_POST['TourType']) && $_POST['TourType'] == $tour_type['id']) ? ' selected="selected" ' : '';
+                            $select_type = (isset($_POST['TourType']) && $_POST['TourType'] == $tour_type['type_id']) ? ' selected="selected" ' : '';
 
-                            echo '<option value="' . $tour_type['id'] . '"' . $select_type . '>' . $tour_type['Tour_Type'] . '</option>';
+                            echo '<option value="' . $tour_type['type_id'] . '"' . $select_type . '>' . $tour_type['tour_type'] . '</option>';
                         }
                     }
                     ?>
@@ -249,6 +249,7 @@ $tour_name_error = $tour_type_error = $location1_error = "";
             </div>
             <!-- Location 3 -->
 
+            <button type="submit" class="btn btn-primary btn-block">Add New Tour</button>
         </form>
     </div>
 
