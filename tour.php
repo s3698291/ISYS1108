@@ -29,6 +29,7 @@ $tour_name_error = $tour_type_error = $location1_error = "";
             $location1_error = "Please select a location";
         } else {
             $location1 = $_POST['Location1'];
+            $tour_minim_time = $_POST[''];
         }
 
         // Location 2 and 3: Validate and submit
@@ -197,6 +198,14 @@ $tour_name_error = $tour_type_error = $location1_error = "";
                 </div>
 
             </div>
+            
+            <!-- Location 1 Minimum Time -->
+            <div class="form-group">
+                    <label for="location1_min_time">Location 1 Minimum Time</label>
+            </div>
+
+            <!-- Location 1 Minimum Time -->
+
             <!-- Location 1 -->
 
             <!-- Location 2 -->
@@ -249,11 +258,44 @@ $tour_name_error = $tour_type_error = $location1_error = "";
             </div>
             <!-- Location 3 -->
 
+            <!-- Minimum Time -->
+            <div class="form-group">
+                <label for="mintime">Minimum Tour Time</label>
+
+                <select class="form-control <?php echo (!empty($tour_min_time_error)) ? 'border border-danger' : ''; ?>" id="TourMinTime" name="TourMinTime">
+                    <option value="" selected>Tour Minimum Time</option>
+
+                    <!-- Show dropdown list from Location table-->
+                    <?php 
+                    $get_location3_sql = "SELECT location_id, location_name, minimum_time FROM m02_location WHERE is_deleted = 0 ORDER BY location_name ASC";
+                    $get_location3 = mysqli_query($conn, $get_location3_sql);
+
+                    if (mysqli_num_rows($get_location3) > 0) {
+                        while ($location3 = mysqli_fetch_assoc($get_location3)) {
+                            $select_location3 = (isset($_POST['Location3']) && $_POST['Location3'] == $location3['location_id']) ? ' selected="selected" ' : '';
+
+                            echo '<option value="' . $location3['location_id'] . '"' . $select_location3 . '>' . $location3['location_name'] . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
+
+            </div>
+            <!-- Minimum Time-->
+
             <button type="submit" class="btn btn-primary btn-block">Add New Tour</button>
         </form>
     </div>
 
     <!-- Tour Fields -->
+
+    <!-- JS for Location Minimum Time -->
+
+    <!-- JS for Location Minimum Time -->
+    <script>
+
+    </script>
+
 
     <?php include 'footer.php'; ?>
 </body>
