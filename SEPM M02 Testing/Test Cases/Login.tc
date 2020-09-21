@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Login to Tour Management System using admin account</description>
+   <name>Login</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>cd9ba031-11ce-4b19-9830-89378fc046a0</testCaseGuid>
+</TestCaseEntity>
