@@ -2,32 +2,32 @@
 session_start();
 require_once 'config.php';
 
-$email = $password = '';
-$email_error = $password_error = '';
+$username = $password = $remember = '';
+$username_error = $password_error = $remember_error = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-    //Email: Validate and submit
-    if (empty(trim($_POST['email']))) {
-        $email_error = "Please enter an email adddress.";
+    //Username: Validate and submit
+    if (empty(trim($_POST['Username']))) {
+        $username_error = "Please enter a username.";
     } else {
-        $email = trim($_POST['email']);
+        $username = trim($_POST['Username']);
     }
 
     //Password: Validate and submit
-    if (empty(trim($_POST['password']))) {
+    if (empty(trim($_POST['Password']))) {
         $password_error = "Please enter a password.";
     } else {
-        $password = trim($_POST['password']);
+        $password = trim($_POST['Password']);
     }
 
     //Send login information to database
-    if (empty($email_error) && empty($password_error)) {
-        // $login_sql = '';
+    if (empty($username_error) && empty($password_error)) {
+        $login_sql = 'SELECT account_id, password, role, is_deleted FROM m02_account WHERE username = ?';
 
         if ($login_stmt = mysqli_prepare($conn, $login_sql)) {
-            mysqli_stmt_bind_param($login_stmt, 's', $param_email);
+            mysqli_stmt_bind_param($login_stmt, 's', $param_username);
 
-            $param_email = $email;
+            $param_username = $username;
 
             if (mysqli_stmt_execute($login_stmt)) {
                 mysqli_stmt_store_result($login_stmt);
@@ -40,15 +40,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                             $login_error = "This account has been deactivated by the Admin.";
                         } else {
                             if (password_verify($password, $account_password)) {
+								if (isset($_POST['usernameRemember']) && $_POST['usernameRemember'] == 'on') {
+									setcookie('m02_user_username', $username, time() + (86400 * 30), '/m02');
+								}
+								
                                 session_start();
 
-                                $_SESSION['loggedIn'] == TRUE;
-                                $_SESSION['accountId'] == $account_id;
+                                $_SESSION['m02_loggedIn'] = TRUE;
+                                $_SESSION['m02_accountId'] = $account_id;
 
                                 if ($account_role == 1) { 
-                                    $_SESSION['role'] = 'Admin';
+                                    $_SESSION['m02_role'] = 'Admin';
                                 } elseif ($account_role == 2) {
-                                    $_SESSION['role'] = 'Assistant';
+                                    $_SESSION['m02_role'] = 'Assistant';
                                 }
 
                                 header('location: tour.php');
@@ -62,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     }
 
                 } else {
-                    $email_error = "No account was found with the entered email address.";
+                    $username_error = "No account was found with the entered username.";
                 }
 
             } else {
@@ -100,30 +104,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     <?php include 'header.php'; ?>
 
     <!-- Login Form -->
-    <h1 class="text-center mt-3">Login</h1>
 
-    <div class="container">
+    <div class="container sticky-footer">
+		<h1 class="text-center mt-3">Login</h1>
+		
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
 
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" class="form-control <?php echo (!empty($email_error)) ? 'border border-danger' : ''; ?>" id="email" name="email" placeholder="Enter Email Address" value="">
+                <label for="Username">Username</label>
+				
+				<?php 
+				if (isset($_COOKIE['m02_user_username'])) {
+					$saved_login_username = $_COOKIE['m02_user_username'];
+				}
+				?>
+				
+                <input type="text" class="form-control <?php echo (!empty($username_error)) ? 'border border-danger' : ''; ?>" id="Username" name="Username" placeholder="Enter Username" value="<?php echo (!empty($username)) ? $username : $saved_login_username; ?>">
 
                 <div>
                     <p class="text-danger">
-                        <?php echo $email_error; ?>
+                        <?php echo $username_error; ?>
                     </p>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control <?php echo (!empty($password_error)) ? 'border border-danger' : ''; ?>" id="password" name="password" placeholder="Enter Password" value="">
+                <label for="Password">Password</label>
+                <input type="password" class="form-control <?php echo (!empty($password_error)) ? 'border border-danger' : ''; ?>" id="Password" name="Password" placeholder="Enter Password" value="<?php echo (!empty($password)) ? $password : ''; ?>">
 
                 <div>
                     <p class="text-danger">
                         <?php echo $password_error; ?>
                     </p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="usernameRemember" id="usernameRemember" <?php echo (isset($_POST['usernameRemember']) && $_POST['usernameRemember'] == 'on') ? 'checked' : ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['usernameRemember']) ? '' : 'checked'); ?>>
+
+                    <label class="form-check-label" for="usernameRemember">
+                        Remember my username
+                    </label>
                 </div>
             </div>
 

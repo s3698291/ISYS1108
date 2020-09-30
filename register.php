@@ -2,8 +2,79 @@
 session_start();
 require_once 'config.php';
 
-$full_name = $email = $password = $confirm_password = $role = "";
-$full_name_eror = $email_error = $password_error = $confirm_password_error = $role_error = "";
+$full_name = $username = $password = $confirm_password = $role = "";
+$full_name_error = $username_error = $password_error = $confirm_password_error = $role_error = "";
+
+if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
+    if (!isset($_SESSION['m02_role']) || $_SESSION['m02_role'] == 'Assistant') {
+        header('location: tour.php');
+
+    } elseif (isset($_SESSION['m02_role']) && $_SESSION['m02_role'] == 'Admin') {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (empty(trim($_POST['FullName']))) {
+                $full_name_error = 'Please enter staff\'s full name.';
+
+            } else {
+                $full_name = trim($_POST['FullName']);
+            }
+
+            if (empty(trim($_POST['Username']))){
+                $username_error = 'Please enter staff\'s username.';
+            
+            } else { 
+                $username = trim($_POST['Username']);
+            } 
+
+            if (empty(trim($_POST['Password']))) {
+                $password_error = 'Please enter a password.';
+            
+            } else {
+                $password = trim($_POST['Password']);
+            }
+
+            if (empty(trim($_POST['ConfirmPassword']))) {
+                $confirm_password_error = "Please confirm the password.";
+
+            } else {
+                $confirm_password = trim($_POST['ConfirmPassword']);
+
+                if (empty($confirm_password_error) && empty($password_error) && ($password != $confirm_password)) {
+                    $confirm_password_error = $password_error = 'Password did not matched.';
+                }
+            }
+
+            if (empty(trim($_POST['Role']))) {
+                $role_error = 'Please enter staff\'s role.';
+
+            } else {
+                $role = trim($_POST['Role']);
+            }
+
+            if (empty($full_name_error) && empty($username_error) && empty($password_error) && empty($confirm_password_error) && empty($role_error)) {
+                $registerSql = 'INSERT INTO m02_account (full_name, username, password, role) VALUES (?, ?, ?, ?)';
+
+                if ($stmt = mysqli_prepare($conn, $registerSql)) {
+                    mysqli_stmt_bind_param($stmt, 'sssi', $param_full_name, $param_username, $param_password, $param_role);
+
+                    $param_full_name = $full_name;
+                    $param_username = $username;
+                    $param_password = password_hash($password, PASSWORD_DEFAULT);
+                    $param_role = $role;
+
+                    if (mysqli_stmt_execute($stmt)) {
+                        $registered = TRUE;
+                        unset($_POST);
+
+                    } else {
+                        echo 'Error: ' . $registerSql . '<br />' .mysqli_error($conn);
+                    }
+                }
+
+                mysqli_stmt_close($stmt);
+			}
+    	}	
+	}
+}
 
 ?>
 
@@ -32,10 +103,101 @@ $full_name_eror = $email_error = $password_error = $confirm_password_error = $ro
 
     <!-- Register Account field -->
 
-    <h1 class="text-center mt-3"> Register Account </h1>
+    <div class="container sticky-footer">
+		<h1 class="text-center mt-3"> Register Account </h1>
+		
+        <?php 
+        if ($registered === TRUE) {
+            echo  '
+            <div class="alert alert-success my-4 alert-dismissable fade show" role="alert">
+                Account registered successfully.
 
-    <div class="container">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            ';
+        }
+        ?>
 
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+            <div class="form-group">
+                <div class="form-group">
+                    <label for="FullName">Full Name</label>
+                    <input type="text" class="form-control <?php echo (!empty($full_name_error)) ? 'border border-danger' : ''; ?>" id="FullName" name="FullName" placeholder="Enter Full Name" value="<?php echo $_POST['FullName']; ?>">
+
+                    <div>
+                        <p class="text-danger">
+                            <?php echo $full_name_error; ?>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="Username">Username</label>
+                    <input type="text" class="form-control <?php echo (!empty($username_error)) ? 'border border-danger' : ''; ?>" id="Username" name="Username" placeholder="Enter Username" value="<?php echo $_POST['Username']; ?>">
+
+                    <div>
+                        <p class="text-danger">
+                            <?php echo $username_error; ?>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col">
+                        <label for="Password">Password</label>
+                        <input type="password" class="form-control <?php echo (!empty($password_error)) ? 'border border-danger' : ''; ?>" id="Password" name="Password" placeholder="Enter Password" value="<?php echo $_POST['Password']; ?>">
+
+                        <div>
+                            <p class="text-danger">
+                                <?php echo $password_error; ?>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label for="ConfirmPassword">Confirm Password</label>
+                        <input type="password" class="form-control <?php echo (!empty($confirm_password_error)) ? 'border border-danger' : ''; ?>" id="ConfirmPassword" name="ConfirmPassword" placeholder="Confirm Password" value="<?php echo $_POST['ConfirmPassword']; ?>">
+
+                        <div>
+                            <p class="text-danger">
+                                <?php echo $confirm_password_error; ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="Role">Role</label>
+                    <select class="form-control <?php echo (!empty($role_error)) ? 'border border-danger' : ''; ?>" id="Role" name="Role">
+                        <option value="" selected>Select Role</option>
+
+                        <?php 
+                        $getRoleSql = "SELECT * FROM m02_role ORDER BY role_type ASC";
+                        $getRole = mysqli_query($conn, $getRoleSql);
+
+                        if (mysqli_num_rows($getRole) > 0) {
+                            while ($role = mysqli_fetch_assoc($getRole)) {
+                                $selected_role = (isset($_POST['Role']) && $_POST['Role'] == $role['role_id']) ? ' selected="selected"' : '';
+
+                                echo '<option value="' . $role['role_id'] . '"' . $selected_role . '>' . $role['role_type'] . '</option>';
+                            }
+                        }
+                        ?>
+                    </select>
+
+                    <div>
+                        <p class="text-danger">
+                            <?php echo $role_error; ?>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </form>
     </div>
 
     <!-- Register Account field -->
@@ -44,3 +206,5 @@ $full_name_eror = $email_error = $password_error = $confirm_password_error = $ro
 </body>
 
 </html>
+
+<?php mysqli_close($conn); ?>

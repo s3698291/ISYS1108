@@ -2,10 +2,7 @@
 session_start();
 require_once 'config.php';
 
-/*if (!isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] != TRUE) {
-    header('location: login.php');
-
-} elseif (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] == 'TRUE') {*/
+if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     // Manage Location functionalities: Recover, Remove, Copy, Edit
     if (isset($_GET['action']) && !empty($_GET['action'])) {
       switch ($_GET['action']) {
@@ -53,7 +50,9 @@ require_once 'config.php';
       }
     }
 
-  // }
+} else {
+	header('location: /m02/login');
+}
 
 ?>
 
@@ -79,10 +78,10 @@ require_once 'config.php';
 
 <body>
     <?php include 'header.php'; ?>
-
-    <h1 class="text-center mt-3"> Manage Locations </h1>
  
-    <div class="container">
+    <div class="container sticky-footer">
+		<h1 class="text-center mt-3"> Manage Locations </h1>
+		
         <!-- Recover/Remove/Copy/Edit Location Validation -->
         <?php
         if ($_SESSION['m02_edit_location_success'] === TRUE) {

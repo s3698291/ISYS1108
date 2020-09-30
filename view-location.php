@@ -4,14 +4,14 @@ require_once 'config.php';
 
 if (!isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] != 'TRUE') {
 	header('location: /m02/login');
-} 
+}
 
 ?>
 
 <html>
 
 <head>
-    <title>View Account | Tour Management</title>
+    <title>View Location | Tour Management</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -30,17 +30,15 @@ if (!isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] != 'TRUE') {
 
 <body>
     <?php include 'header.php'; ?>
-
-    <!-- View Account field -->
-
+ 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3"> View Existing Accounts </h1>
+		<h1 class="text-center mt-3"> View Existing Locations </h1>
 		
-		<?php
-        if ($_SESSION['m02_account_not_found'] === TRUE) {
+        <?php
+        if ($_SESSION['m02_location_not_found'] === TRUE) {
             echo '
             <div class="alert alert-warning my-4 alert-dismissible fade show" role="alert">
-                Account not found.
+                Location not found.
 
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -48,55 +46,52 @@ if (!isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] != 'TRUE') {
             </div>
             ';
             
-            unset($_SESSION['m02_account_not_found']);
+            unset($_SESSION['m02_location_not_found']);
         }
-		
-		$get_account_sql = 'SELECT * FROM m02_account ORDER BY is_deleted, account_id';
-		$get_account = mysqli_query($conn, $get_account_sql);
-		
-		if (mysqli_num_rows($get_account) > 0) {
-			echo '
-			<div class="table-responsive">
-				<table class="table table-hover text-center">
-					<thead>
-						<tr>
+        
+        $get_location_sql = 'SELECT * FROM m02_location ORDER BY is_deleted, location_id';
+        $get_location = mysqli_query($conn, $get_location_sql);
+
+        if (mysqli_num_rows($get_location) > 0) {
+            echo '
+            <div class="table-responsive">
+                <table class="table table-hover text-center">
+                    <thead>
+                        <tr>
 							<th scope="col" class="align-middle">ID</th>
-							<th scope="col" class="align-middle">Full Name</th>
-							<th scope="col" class="align-middle">Username</th>
-							<th scope="col" class="align-middle">Role</th>
-						</tr>
-					</thead>
-			';
-			
-			while ($account_list = mysqli_fetch_assoc($get_account)) {
-				$get_account_role_sql = 'SELECT role_type FROM m02_role WHERE role_id = ' . $account_list['role'];
-				$get_account_role = mysqli_query($conn, $get_account_role_sql);
-				
-				while ($account_role = mysqli_fetch_assoc($get_account_role)) {
-					$role = $account_role['role_type'];
-				}
-				
-				echo '
-						<tr>
-							<td class="align-middle">' . $account_list['account_id'] . '</td>
-							<td class="align-middle">' . $account_list['full_name'] . '</td>
-							<td class="align-middle">' . $account_list['username'] . '</td>
-							<td class="align-middle">' . $role . '</td>
-						</tr>
-				';
-			}
-			
-			echo '
-					<tbody>
-				</table>
-			</div>
-			';
-		}
-		?>
+							<th scope="col" class="align-middle">Location Name</th>
+							<th scope="col" class="align-middle">Coordinate</th>
+							<th scope="col" class="align-middle">Minimum Time</th>
+							<th scope="col" class="align-middle">Description</th>
+                        </tr>
+                    </thead>
 
-    </div>
+                    <tbody>
+            '; 
 
-    <!-- View Account field -->
+            while ($location_list = mysqli_fetch_assoc($get_location)) {
+                echo '
+                		<tr>
+							<td class="align-middle">' . $location_list['location_id'] . '</td>
+							<td class="align-middle">' . $location_list['location_name'] . '</td>
+							<td class="align-middle">' . $location_list['coordinate'] . '</td>
+							<td class="align-middle">' . $location_list['minimum_time'] . '</td>
+							<td class="align-middle">' . $location_list['description'] . '</td>
+						</tr>
+                '; 
+            }
+
+
+            echo '
+                    </tbody>
+                </table>
+            </div>
+            ';
+        } 
+
+        ?>
+
+	</div>
 
     <?php include 'footer.php'; ?>
 </body>

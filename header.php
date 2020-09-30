@@ -5,47 +5,70 @@
 
     <div class="collapse navbar-collapse" id="navbarContent">
         <ul class="navbar-nav mx-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarLocation" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tour Management</a>
+			<li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarLocation" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tour Management</a>
+                
+                    <div class="dropdown-menu" aria-labelledby="navbarLocation">
+						<a class="dropdown-item" href="tour.php">Add New Tour</a>
+						
+					<!-- If User logs in, header changes -->
+					<?php
+					if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == TRUE) {
 
-                <div class="dropdown-menu" aria-labelledby="navbarLocation">
-                    <a class="dropdown-item" href="tour.php">Add New Tour</a>
+						if (isset($_SESSION['m02_role']) && $_SESSION['m02_role'] == 'Admin') {
+							echo '
+								<a class="dropdown-item" href="manage-tour.php">Manage Existing Tour</a>
 
-                    <a class="dropdown-item" href="#">Edit Existing Tour</a>
+								<hr>
 
-                    <hr>
+								<a class="dropdown-item" href="tour-type.php">Add New Tour Type</a>
 
-                    <a class="dropdown-item" href="tour-type.php">Add New Tour Type</a>
+								<a class="dropdown-item" href="manage-tour-types.php">Manage Existing Tour Type</a>
+							';
+						}
 
-                    <a class="dropdown-item" href="#">View Existing Tour Type</a>
-                </div>
-            </li>
+						elseif (isset($_SESSION['m02_role']) && $_SESSION['m02_role'] == 'Assistant') {
+							echo'
+								<a class="dropdown-item" href="view-tour.php">View Existing Tour</a>
+
+								<a class="dropdown-item" href="view-tour-type.php">View Existing Tour Type</a>
+							';
+						}
+					}
+					?>
+					</div>
+			</li>
 
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarLocation" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Location Management</a>
 
                 <div class="dropdown-menu" aria-labelledby="navbarLocation">
                     <a class="dropdown-item" href="location.php">Add New Location</a>
+					
+					<!-- If User logs in, header changes -->
+					<?php
+					if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == TRUE) {
+						
+						if (isset($_SESSION['m02_role']) && $_SESSION['m02_role'] == 'Admin') {
+							echo '
+								<a class="dropdown-item" href="manage-location.php">Manage Existing Location</a>
+							';
+						}
+						
+						elseif (isset($_SESSION['m02_role']) && $_SESSION['m02_role'] == 'Assistant') {
+							echo'
+								<a class="dropdown-item" href="view-location.php">View Existing Location</a>
+							';
+						}
+					}
+					?>
 
-                    <a class="dropdown-item" href="manage-location.php">Manage Existing Location</a>
                 </div>
             </li>
 
-            
-            <li class="nav-item">
-                <a class="nav-link" href="login.php">Login</a>
-            </li> 
-
             <!-- If User logs in, header changes -->
-            <?php 
-            if (!isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] != TRUE) {
-                echo '
-                <li class="nav-item">
-                    <a class="nav-link" href="login.php">Login</a>
-                </li>
-                ';
-            
-            } elseif (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] == TRUE) {
+            <?php
+            if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == TRUE) {
                 echo '
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarAccount" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account Management</a>
@@ -53,11 +76,17 @@
                     <div class="dropdown-menu" aria-labelledby="navbarAccount">
                 ';
 
-                if (isset($_SESSION['role']) && $_SESSION['role'] == 'Admin') {
+                if (isset($_SESSION['m02_role']) && $_SESSION['m02_role'] == 'Admin') {
                     echo '
-                    <a class="dropdown-item" href="view-account.php">View Account</a>
+                    <a class="dropdown-item" href="manage-account.php">Manage Account</a>
 
                     <a class="dropdown-item" href="register.php">Register Account</a>
+                    ';
+                }
+
+                elseif (isset($_SESSION['m02_role']) && $_SESSION['m02_role'] == 'Assistant') {
+                    echo'
+                    <a class="dropdown-item" href="view-account.php">View Account</a>
                     ';
                 }
 
@@ -67,7 +96,13 @@
                 </li>
                 ';
            
-            } 
+            } else {
+				echo '
+				<li class="nav-item">
+					<a class="nav-link" href="login.php">Login</a>
+				</li>
+				';
+			}
             ?>
         </ul>
     </div>

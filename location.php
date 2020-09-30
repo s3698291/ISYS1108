@@ -5,10 +5,7 @@ require_once 'config.php';
 $location_name = $location_coordinate = $location_min_time = $location_description = '';
 $location_name_error = $location_coordinate_error = $location_min_time_error = $location_description_error = '';
 
-/*if (!isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] != TRUE) {
-    header('location: login.php');
-
-} elseif (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] == 'TRUE') {*/
+if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //Location name: Validate and submit
         if (empty(trim($_POST['LocationName']))) {
@@ -62,7 +59,9 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
 
         } 
     }
-//}
+} else {
+	header('location: /m02/login');
+}
 ?>
 
 <html>
@@ -89,9 +88,10 @@ $location_name_error = $location_coordinate_error = $location_min_time_error = $
     <?php include 'header.php'; ?>
 
     <!-- Location Fields -->
-    <h1 class="text-center mt-3">Add Location</h1>
-
-    <div class="container">
+    
+    <div class="container sticky-footer">
+		<h1 class="text-center mt-3">Add Location</h1>
+		
         <?php 
         if ($location_Added === TRUE) {
             echo '
