@@ -71,16 +71,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
             $location3 = $_POST['Location3'];
         }
 
-        // Calculate Minimum Time
-        $tour_min_time_query = "SELECT SUM(minimum_time) FROM m02_location WHERE location_id IN ('" . $location1 . "', '" . $location2 . "', '" . $location3 . "')";
-        $tour_min_time_stmt = mysqli_prepare($conn, $tour_min_time_query);
+        $tour_min_time = $_POST['total_mintime'];
 
-        mysqli_stmt_bind_param($tour_min_time_stmt, 'iii', $location1, $location2, $location3);
-        mysqli_stmt_execute($tour_min_time_stmt);
-        mysqli_stmt_store_result($tour_min_time_stmt);
-        mysqli_stmt_bind_result($tour_min_time_stmt, $tour_min_time);
-
-        while (mysqli_stmt_fetch($tour_min_time_stmt)) { 
             if (empty($tour_name_error) && empty($tour_type_error) && empty($location1_error)) {
                 $updateTourSql = "UPDATE m02_tour SET tour_name='" . $tour_name . "', tour_type='" . $tour_type . "', location1= " . $location1 . ", location2= " . $location2 . ", location3= " . $location3 . ", minimum_time= " . $tour_min_time . " WHERE tour_id=" . $id;
                 
@@ -103,11 +95,13 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
                 mysqli_stmt_close($stmt);
 
+                $_SESSION['m02_edit_tour_success'] = TRUE;
+                header('location: manage-tour');
+
                 }
             } else {
                 $update_error = TRUE;
             }
-        }
     } else {
         header('location: manage-tour');
     }
@@ -127,25 +121,27 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-
+	
     <!-- JavaScript for buttons -->
+	<!--
     <script src="https://use.fontawesome.com/08847fc84c.js"></script>
+	-->
 
     <!-- CSS from Bootstrap -->
     <link rel="stylesheet" type="text/css" href="style/bootstrap.css">
 
     <!-- Individualised CSS -->
-    <link rel="stylesheet" type="text/css" href="style/style.css?">
+    <link rel="stylesheet" type="text/css" href="style/style.css?<?php echo date('l jS \of F Y h:i:s A'); ?>">
 </head>
 
-<body id="UpdateTour">
+<body>
     <?php include 'header.php'; ?>
 
     <!-- Edit Location Field -->
-    <h1 class="text-center mt-3">Edit Tour</h1>
 
-    <div class="container">
-        <!-- -->
+    <div class="container sticky-footer">
+		<h1 class="text-center mt-3">Edit Tour</h1>
+		
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
             <input type="hidden" id="id" name="id" value="<?php echo !empty($_POST['id']) ? $_POST['id'] : $_GET['id']; ?>">
 
@@ -176,7 +172,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
                             if (mysqli_num_rows($get_tour_type) > 0) {
                                 while ($tour_type = mysqli_fetch_assoc($get_tour_type)) {
-                                    $select_type = (isset($_POST['TourType']) && $_POST['TourType'] == $tour_type['type_id']) ? ' selected="selected" ' : '';
+                                    $select_type = ((isset($_POST['TourType']) && $_POST['TourType'] == $tour_type['type_id']) || (isset($saved_tour_type) && $saved_tour_type == $tour_type['type_id'])) ? ' selected="selected" ' : '';
 
                                     echo '<option value="' . $tour_type['type_id'] . '"' . $select_type . '>' . $tour_type['tour_type'] . '</option>';
                                 }
@@ -196,159 +192,182 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                         <tr>
                             <th style="width:60%">Location</th>
                             <th>Minimum Time</th>
-                            <th style="width:10%">
-                                <button type="button" class="btn btn-default">
-                                    <i class="fa fa-plus"></i>
-                                </button>
-                            </th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr>
                             <td>
-                                <select class="form-control <?php echo (!empty($tour_type_error)) ? 'border border-danger' : ''; ?>" id="TourType" name="TourType">
-                                    <option value="<?php echo !empty($_POST['TourType']) ? $_POST['TourType'] : $saved_tour_type; ?>">Select First Location</option>
+                                <select class="form-control <?php echo (!empty($location1_error)) ? 'border border-danger' : ''; ?>" id="Location1" name="Location1" onchange="calculateMinTime(this.value, this.id)">
+                                    <option value="" selected>Select First Location</option>
 
                                     <!-- Show dropdown list from Tour Type table -->
                                     <?php 
-                                    $get_tour_type_sql = "SELECT * FROM m02_type WHERE is_deleted = 0 ORDER BY tour_type ASC";
-                                    $get_tour_type = mysqli_query($conn, $get_tour_type_sql);
+                                    $get_location_sql = "SELECT * FROM m02_location WHERE is_deleted = 0 ORDER BY location_name ASC";
+                                    $get_location = mysqli_query($conn, $get_location_sql);
 
-                                    if (mysqli_num_rows($get_tour_type) > 0) {
-                                        while ($tour_type = mysqli_fetch_assoc($get_tour_type)) {
-                                            $select_type = (isset($_POST['TourType']) && $_POST['TourType'] == $tour_type['type_id']) ? ' selected="selected" ' : '';
+                                    if (mysqli_num_rows($get_location) > 0) {
+                                        while ($location = mysqli_fetch_assoc($get_location)) {
+                                            $select_location = ((isset($_POST['Location1']) && $_POST['Location1'] == $location['location_id']) || (isset($saved_location1) && $saved_location1 == $location['location_id'])) ? ' selected="selected" ' : '';
 
-                                            echo '<option value="' . $tour_type['type_id'] . '"' . $select_type . '>' . $tour_type['tour_type'] . '</option>';
+                                            echo '<option value="' . $location['location_id'] . '"' . $select_location . '>' . $location['location_name'] . '</option>';
                                         }
                                     }
                                     ?>
                                 </select>
 
                                 <?php
-                                if (!empty($tour_type_error)) {
-                                    echo '<p class="text-danger mb-0">' . $tour_type_error . '</p>';
+                                if (!empty($location1_error)) {
+                                    echo '<p class="text-danger mb-0">' . $location1_error . '</p>';
                                 }
                                 ?>
                             </td>
-                            <td></td>
                             <td>
-                                <button type="button" class="btn btn-default" onclick="">
-                                    <i class="fa fa-close"></i>
-                                </button>
+                                <?php 
+                                $get_location1_mintime_sql = 'SELECT minimum_time FROM m02_location WHERE location_id = ' . $saved_location1;
+                                $get_location1_mintime = mysqli_query($conn, $get_location1_mintime_sql);
+
+                                if (mysqli_num_rows($get_location1_mintime) == 1) {
+                                    while ($location1 = mysqli_fetch_assoc($get_location1_mintime)) {
+                                        $saved_location1_mintime = $location1['minimum_time'];
+                                    }
+                                }
+                                ?>
+
+                                <input type="number" class="form-control-plaintext number-hide" id="Location1_mintime" name="Location1_mintime" value="<?php echo !empty($_POST['Location1_mintime']) ? $_POST['Location1_mintime'] : $saved_location1_mintime; ?>" readonly>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <select class="form-control" id="Location2" name="Location2" onchange="calculateMinTime(this.value, this.id)">
+                                    <option value="" selected>Select Second Location</option>
+
+                                    <!-- Show dropdown list from Tour Type table -->
+                                    <?php 
+                                    $get_location2_sql = "SELECT * FROM m02_location WHERE is_deleted = 0 ORDER BY location_name ASC";
+                                    $get_location2 = mysqli_query($conn, $get_location2_sql);
+
+                                    if (mysqli_num_rows($get_location2) > 0) {
+                                        while ($location_2 = mysqli_fetch_assoc($get_location2)) {
+                                            $select_location2 = ((isset($_POST['Location2']) && $_POST['Location2'] == $location_2['location_id']) || (isset($saved_location2) && $saved_location2 == $location_2['location_id'])) ? ' selected="selected" ' : '';
+
+                                            echo '<option value="' . $location_2['location_id'] . '"' . $select_location2 . '>' . $location_2['location_name'] . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td>
+                                <?php 
+                                $get_location2_mintime_sql = 'SELECT minimum_time FROM m02_location WHERE location_id = ' . $saved_location2;
+                                $get_location2_mintime = mysqli_query($conn, $get_location2_mintime_sql);
+
+                                if (mysqli_num_rows($get_location2_mintime) == 1) {
+                                    while ($location2 = mysqli_fetch_assoc($get_location2_mintime)) {
+                                        $saved_location2_mintime = $location2['minimum_time'];
+                                    }
+                                }
+                                ?>
+
+                                <input type="number" class="form-control-plaintext number-hide" id="Location2_mintime" name="Location2_mintime" value="<?php echo !empty($_POST['Location2_mintime']) ? $_POST['Location2_mintime'] : $saved_location2_mintime; ?>" readonly>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <select class="form-control" id="Location3" name="Location3" onchange="calculateMinTime(this.value, this.id)">
+                                    <option value="" selected>Select Third Location</option>
+
+                                    <?php 
+                                    $get_location3_sql = "SELECT * FROM m02_location WHERE is_deleted = 0 ORDER BY location_name ASC";
+                                    $get_location3 = mysqli_query($conn, $get_location3_sql);
+
+                                    if (mysqli_num_rows($get_location3) > 0) {
+                                        while ($location_3 = mysqli_fetch_assoc($get_location3)) {
+                                            $select_location3 = ((isset($_POST['Location3']) && $_POST['Location3'] == $location_3['location_id']) || (isset($saved_location3) && $saved_location3 == $location_3['location_id'])) ? ' selected="selected" ' : '';
+
+                                            echo '<option value="' . $location_3['location_id'] . '"' . $select_location3 . '>' . $location_3['location_name'] . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td>
+                                <?php 
+                                $get_location3_mintime_sql = 'SELECT minimum_time FROM m02_location WHERE location_id = ' . $saved_location3;
+                                $get_location3_mintime = mysqli_query($conn, $get_location3_mintime_sql);
+
+                                if (mysqli_num_rows($get_location3_mintime) == 1) {
+                                    while ($location3 = mysqli_fetch_assoc($get_location3_mintime)) {
+                                        $saved_location3_mintime = $location3['minimum_time'];
+                                    }
+                                }
+                                ?>
+
+                                <input type="number" class="form-control-plaintext number-hide" id="Location3_mintime" name="Location3_mintime" value="<?php echo !empty($_POST['Location3_mintime']) ? $_POST['Location3_mintime'] : $saved_location3_mintime; ?>" readonly>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+
+                <div class="col-sm-5 float-right">
+                    <div class="form-group">
+                        <label for="total_mintime">Total minimum time: </label>
+
+                        <input type="number" id="total_mintime" name="total_mintime" class="form-control number-hide d-inline" value="<?php echo !empty($_POST['total_mintime']) ? $_POST['total_mintime'] : $saved_tour_minimum_time; ?>" readonly>
+                    </div>
+                </div>
+
+                <script>
+                    function calculateMinTime(selected_id, form_id) {
+                        var xhttpAccount, resultAccount, parsedAccount, accountInfo;
+
+                        xhttpAccount = new XMLHttpRequest();
+
+                        xhttpAccount.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                resultAccount = this.responseText;
+                                parsedAccount = JSON.parse(resultAccount);
+                                accountInfo = parsedAccount[0];
+
+                                if (document.getElementById('total_mintime').value == '') {
+                                    document.getElementById('total_mintime').value = accountInfo.mintime;
+
+                                } else {
+                                    if (document.getElementById(form_id + '_mintime').value == '') {
+                                        var deduct_time = 0;
+                                    } else {
+                                        var deduct_time = document.getElementById(form_id + '_mintime').value;
+                                    }
+
+                                    var new_min_time = parseInt(document.getElementById('total_mintime').value) - deduct_time;
+
+                                    //alert(document.getElementById(form_id + '_mintime').value);
+
+                                    document.getElementById('total_mintime').value = new_min_time + accountInfo.mintime;
+
+                                }
+
+                                document.getElementById(form_id + '_mintime').value = accountInfo.mintime;
+                            }
+                        };
+
+                        xhttpAccount.open('GET', '/m02/get-minimum-time?id=' + selected_id, true);
+                        xhttpAccount.send();
+                    }
+                </script>
+
                 <!-- Location Table -->
             </div>
-        </form>
 
-        <!-- -->
-
-
-        <form action="" method="POST">
-            <input type="hidden" id="id" name="id">
-            <!-- 
-            <div id="TourInfo" class="">
-                <div class="form-group row">
-                    <label for="LocationName" class="col-sm-2 col-form-label">Tour Name</label>
-                    <div class="col-sm-4">
-                        <input type="text" class="form-control" id="TournName" name="TourName" placeholder="Tour Name" value="">
-                        <p class="text-danger">
-                        </p>
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <label for="Coordinate" class="col-sm-2 col-form-label">Tour Type</label>
-                    <div class="col-sm-4">
-                        <select class="form-control"></select>
-                        <option value=""></option>
-                        <p class="text-danger"> 
-                        </p>
-                    </div>
-                </div>
-
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th style="width:60%">Location</th>
-                            <th>Min Duration</th>
-                            <th style="width:10%"><button type="button" class="btn btn-default"><i class="fa fa-plus"></i></button></th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr>
-                            <td>
-                                <select class="form-control">
-                                    <option value="">
-                                    </option>
-                                </select>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            <button type="button" class="btn btn-default" onclick=""><i class="fa fa-close"></i></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <select class="form-control">
-                                    <option value="">
-                                    </option>
-                                </select>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            <button type="button" class="btn btn-default" onclick=""><i class="fa fa-close"></i></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <select class="form-control">
-                                    <option value="">
-                                    </option>
-                                </select>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            <button type="button" class="btn btn-default" onclick=""><i class="fa fa-close"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-               
-                <div class="col-sm-4 pull pull-right">
-                    <div class="form-group">
-                    <label>Tour Minimum Time</label>
-                    <input></input>
-                    </div>
-
-                    
-                </div>
-
-            </div>
-                
-
-             --> 
-            <button id="UpdateButton" type="submit" class="btn btn-primary btn-block">Save Changes</button>
-        
+            <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
         </form>
     </div>
-
-    <!-- Edit Location Field -->
-
-    <!-- JS Retrieve Tour Info -->
-
-    <!-- JS Retrieve Tour Info -->
 
     <?php include 'footer.php'; ?>
 </body>
 
 </html>
+
+<?php mysqli_close($conn) ?>
