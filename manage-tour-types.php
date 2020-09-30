@@ -3,34 +3,34 @@ session_start();
 require_once 'config.php';
 
 if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
-    // Manage Tour functionalities: Recover, Remove, Copy, Edit
+    // Manage Tour Type functionalities: Recover, Remove, Edit
     if (isset($_GET['action']) && !empty($_GET['action'])) {
         switch ($_GET['action']) {
           case 'recover':
-            $recover_tour_sql = 'UPDATE m02_tour SET is_deleted = 0 WHERE tour_id = ' . $_GET['id'];
+            $recover_type_sql = 'UPDATE m02_type SET is_deleted = 0 WHERE type_id = ' . $_GET['id'];
   
-            if (mysqli_query($conn, $recover_tour_sql)) {
+            if (mysqli_query($conn, $recover_type_sql)) {
                 $recovered = TRUE;
             
             } else {
-                echo 'Error: ' . $recover_tour_sql . '</br>' . mysqli_error($conn);
+                echo 'Error: ' . $recover_type_sql . '</br>' . mysqli_error($conn);
             }
   
           break;
   
           case 'remove':
-            $remove_tour_sql = 'UPDATE m02_tour SET is_deleted = 1 WHERE tour_id = ' . $_GET['id'];
+            $remove_type_sql = 'UPDATE m02_type SET is_deleted = 1 WHERE type_id = ' . $_GET['id'];
   
-            if (mysqli_query($conn, $remove_tour_sql)) {
+            if (mysqli_query($conn, $remove_type_sql)) {
               $removed = TRUE;
   
             } else {
-                echo 'Error: ' . $remove_tour_sql . '</br>' . mysqli_error($conn);
+                echo 'Error: ' . $remove_type_sql . '</br>' . mysqli_error($conn);
             }
   
           break;
         }
-      }
+  }
 } else {
 	header('location: /m02/login');
 }
@@ -39,7 +39,7 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
 <html>
 
 <head>
-    <title>Manage Tour | Tour Management</title>
+    <title>Manage Tour Type | Tour Management</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -60,14 +60,14 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     <?php include 'header.php'; ?>
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3"> Manage Tours </h1>
+		<h1 class="text-center mt-3"> Manage Tour Type </h1>
 		
         <!-- Recover/Remove/Edit Tour Validation -->
         <?php
-        if ($_SESSION['m02_edit_tour_success'] === TRUE) {
+        if ($_SESSION['m02_edit_type_success'] === TRUE) {
             echo '
             <div class="alert alert-success my-4 alert-dismissible fade show" role="alert">
-                Tour edited successfully.
+                Tour Type edited successfully.
 
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -75,13 +75,13 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
             </div>
             ';
             
-            unset($_SESSION['m02_edit_tour_success']);
+            unset($_SESSION['m02_edit_type_success']);
         }
 
-        if ($_SESSION['m02_tour_not_found'] === TRUE) {
+        if ($_SESSION['m02_type_not_found'] === TRUE) {
             echo '
             <div class="alert alert-warning my-4 alert-dismissible fade show" role="alert">
-                Tour not found.
+                Tour Type not found.
 
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -89,13 +89,13 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
             </div>
             ';
             
-            unset($_SESSION['m02_tour_not_found']);
+            unset($_SESSION['m02_type_not_found']);
         }
 
         if ($recovered === TRUE){
           echo '
           <div class="alert alert-success my-4 alert-dismissable fade show" role="alert">
-          Tour recovered successfully.
+          Tour Type recovered successfully.
 
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
@@ -108,7 +108,7 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
         elseif ($removed === TRUE){
           echo '
           <div class="alert alert-success my-4 alert-dismissable fade show" role="alert">
-          Tour removed successfully.
+          Tour Type removed successfully.
 
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
@@ -118,19 +118,17 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
           ';
         }
         
-        $get_tour_sql = 'SELECT * FROM m02_tour ORDER BY is_deleted, tour_id';
-        $get_tour = mysqli_query($conn, $get_tour_sql);
+        $get_type_sql = 'SELECT * FROM m02_type ORDER BY is_deleted, type_id';
+        $get_type = mysqli_query($conn, $get_type_sql);
 
-        if (mysqli_num_rows($get_tour) > 0) {
+        if (mysqli_num_rows($get_type) > 0) {
             echo '
             <div class="table-responsive">
                 <table class="table table-hover text-center">
                     <thead>
                         <tr>
                             <th scope="col" class="align-middle">ID</th>
-                            <th scope="col" class="align-middle">Tour Name</th>
                             <th scope="col" class="align-middle">Tour Type</th>
-                            <th scope="col" class="align-middle">Minimum Time</th>
                             <th scope="col" class="align-middle">Action</th>
                         </tr>
                     </thead>
@@ -138,34 +136,24 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
                     <tbody>
             '; 
 
-            while ($tour_list = mysqli_fetch_assoc($get_tour)) {
-                $get_tour_type_sql = 'SELECT tour_type FROM m02_type WHERE type_id = ' . $tour_list['tour_type'];
-                $get_tour_type = mysqli_query($conn, $get_tour_type_sql);
-
-                while ($tour_type = mysqli_fetch_assoc($get_tour_type)) {
-                    $type = $tour_type['tour_type'];
-                }
-
+            while ($type_list = mysqli_fetch_assoc($get_type)) {
                 echo '
                         <tr>
-                            <td class="align-middle">' . $tour_list['tour_id'] . '</td>
-                            <td class="align-middle">' . $tour_list['tour_name'] . '</td>
-                            <td class="align-middle">' . $type . '</td>
-                            <td class="align-middle">' . $tour_list['minimum_time'] . '</td>
-                            
+                            <td class="align-middle">' . $type_list['type_id'] . '</td>
+                            <td class="align-middle">' . $type_list['tour_type'] . '</td>
                             <td class="align-middle">
 
                 ';
 
-                if ($tour_list['is_deleted'] == 1) {
+                if ($type_list['is_deleted'] == 1) {
                     echo '
-                    <a class="btn btn-primary" href="manage-tour?action=recover&id=' . $tour_list['tour_id'] . '">Recover</a>
+                    <a class="btn btn-primary" href="manage-tour-types?action=recover&id=' . $type_list['type_id'] . '">Recover</a>
                     ';
-                } elseif ($tour_list['is_deleted'] == 0) {
+                } elseif ($type_list['is_deleted'] == 0) {
                     echo '
-                    <a class="btn btn-primary" href="edit-tour?id=' . $tour_list['tour_id'] . '">Edit</a>
+                    <a class="btn btn-primary" href="edit-type?id=' . $type_list['type_id'] . '">Edit</a>
 
-                    <a class="btn btn-primary" href="manage-tour?action=remove&id=' . $tour_list['tour_id'] . '">Remove</a>                    
+                    <a class="btn btn-primary" href="manage-tour-types?action=remove&id=' . $type_list['type_id'] . '">Remove</a>                    
                     ';
                 } 
                     

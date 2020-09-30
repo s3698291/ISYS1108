@@ -4,10 +4,7 @@ require_once 'config.php';
 
 $type_name = $type_name_error = '';
 
-/*if (!isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] != TRUE) {
-    header('location: login.php');
-
-} elseif (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] == 'TRUE') {*/
+if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (empty(trim($_POST['TourType']))) {
             $type_name_error = "Please enter a tour type name.";
@@ -33,6 +30,9 @@ $type_name = $type_name_error = '';
                 mysqli_stmt_close($stmt);
             }
         }
+	}
+} else {
+	header('location: /m02/login');
 }
 ?>
 
@@ -60,9 +60,10 @@ $type_name = $type_name_error = '';
     <?php include 'header.php'; ?>
 
     <!-- Tour Type Fields -->
-    <h1 class="text-center mt-3">Add Tour Type</h1>
 
-    <div class="container">
+    <div class="container sticky-footer">
+		<h1 class="text-center mt-3">Add Tour Type</h1>
+		
         <?php
         if ($type_Added === TRUE) {
             echo'
@@ -90,7 +91,7 @@ $type_name = $type_name_error = '';
                 </div>
             </div>
             
-            <button type="submit" class="btn btn-primary btn-block">Add New Tour</button>
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
         </form>
     </div>
 

@@ -2,44 +2,15 @@
 session_start();
 require_once 'config.php';
 
-if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
-    // Manage Tour functionalities: Recover, Remove, Copy, Edit
-    if (isset($_GET['action']) && !empty($_GET['action'])) {
-        switch ($_GET['action']) {
-          case 'recover':
-            $recover_tour_sql = 'UPDATE m02_tour SET is_deleted = 0 WHERE tour_id = ' . $_GET['id'];
-  
-            if (mysqli_query($conn, $recover_tour_sql)) {
-                $recovered = TRUE;
-            
-            } else {
-                echo 'Error: ' . $recover_tour_sql . '</br>' . mysqli_error($conn);
-            }
-  
-          break;
-  
-          case 'remove':
-            $remove_tour_sql = 'UPDATE m02_tour SET is_deleted = 1 WHERE tour_id = ' . $_GET['id'];
-  
-            if (mysqli_query($conn, $remove_tour_sql)) {
-              $removed = TRUE;
-  
-            } else {
-                echo 'Error: ' . $remove_tour_sql . '</br>' . mysqli_error($conn);
-            }
-  
-          break;
-        }
-      }
-} else {
-	header('location: /m02/login');
-}
+if (!isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] != 'TRUE') {
+    header('location: /m02/login');
+} 
 ?>
 
 <html>
 
 <head>
-    <title>Manage Tour | Tour Management</title>
+    <title>View Tour | Tour Management</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -60,24 +31,10 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     <?php include 'header.php'; ?>
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3"> Manage Tours </h1>
+		<h1 class="text-center mt-3"> View Existing Tours </h1>
 		
         <!-- Recover/Remove/Edit Tour Validation -->
         <?php
-        if ($_SESSION['m02_edit_tour_success'] === TRUE) {
-            echo '
-            <div class="alert alert-success my-4 alert-dismissible fade show" role="alert">
-                Tour edited successfully.
-
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            ';
-            
-            unset($_SESSION['m02_edit_tour_success']);
-        }
-
         if ($_SESSION['m02_tour_not_found'] === TRUE) {
             echo '
             <div class="alert alert-warning my-4 alert-dismissible fade show" role="alert">
@@ -90,32 +47,6 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
             ';
             
             unset($_SESSION['m02_tour_not_found']);
-        }
-
-        if ($recovered === TRUE){
-          echo '
-          <div class="alert alert-success my-4 alert-dismissable fade show" role="alert">
-          Tour recovered successfully.
-
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-
-          </div>
-          ';
-        }
-        
-        elseif ($removed === TRUE){
-          echo '
-          <div class="alert alert-success my-4 alert-dismissable fade show" role="alert">
-          Tour removed successfully.
-
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-
-          </div>
-          ';
         }
         
         $get_tour_sql = 'SELECT * FROM m02_tour ORDER BY is_deleted, tour_id';
@@ -131,7 +62,6 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
                             <th scope="col" class="align-middle">Tour Name</th>
                             <th scope="col" class="align-middle">Tour Type</th>
                             <th scope="col" class="align-middle">Minimum Time</th>
-                            <th scope="col" class="align-middle">Action</th>
                         </tr>
                     </thead>
 
@@ -152,26 +82,7 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
                             <td class="align-middle">' . $tour_list['tour_name'] . '</td>
                             <td class="align-middle">' . $type . '</td>
                             <td class="align-middle">' . $tour_list['minimum_time'] . '</td>
-                            
-                            <td class="align-middle">
-
-                ';
-
-                if ($tour_list['is_deleted'] == 1) {
-                    echo '
-                    <a class="btn btn-primary" href="manage-tour?action=recover&id=' . $tour_list['tour_id'] . '">Recover</a>
-                    ';
-                } elseif ($tour_list['is_deleted'] == 0) {
-                    echo '
-                    <a class="btn btn-primary" href="edit-tour?id=' . $tour_list['tour_id'] . '">Edit</a>
-
-                    <a class="btn btn-primary" href="manage-tour?action=remove&id=' . $tour_list['tour_id'] . '">Remove</a>                    
-                    ';
-                } 
-                    
-                echo '
-                </td>
-            </tr>
+                        </tr>
                 ';
             }
 

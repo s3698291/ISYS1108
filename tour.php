@@ -5,10 +5,7 @@ require_once 'config.php';
 $tour_name = $tour_type = $location1 = $location2 = $location3 = $tour_min_time = "";
 $tour_name_error = $tour_type_error = $location1_error = "";
 
-/*if (!isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] != TRUE) {
-    header('location: login.php');
-
-} elseif (isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] == 'TRUE') {*/
+if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == TRUE) {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         //Tour Name: Validate and submit
         if (empty(trim($_POST['TourName']))) {
@@ -81,6 +78,9 @@ $tour_name_error = $tour_type_error = $location1_error = "";
             }
         }
     }
+} else {
+	header('location: /m02/login');
+}
 
 ?>
 
@@ -98,7 +98,9 @@ $tour_name_error = $tour_type_error = $location1_error = "";
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
     <!-- JavaScript for buttons-->
+	<!--
     <script src="https://use.fontawesome.com/08847fc84c.js"></script>
+	-->
 
     <!-- CSS from Bootstrap -->
     <link rel="stylesheet" type="text/css" href="style/bootstrap.css">
@@ -111,9 +113,10 @@ $tour_name_error = $tour_type_error = $location1_error = "";
     <?php include 'header.php'; ?>
 
     <!-- Tour Fields -->
-    <h1 class="text-center mt-3">Add Tour</h1>
 
-    <div class="container">
+    <div class="container sticky-footer">
+		<h1 class="text-center mt-3">Add Tour</h1>
+		
         <?php
         if ($tour_Added === TRUE) {
             echo'
@@ -178,15 +181,12 @@ $tour_name_error = $tour_type_error = $location1_error = "";
 
             <!-- Location Table -->
 
-                <!-- Location Table Sample-->
-                
-
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th style="width:60%">Location</th>
                             <th>Minimum Time</th>
-                            <th style="width:10%"><button type="button" class="btn btn-default"><i class="fa fa-plus"></i></button></th>
+                            <!-- <th style="width:10%"><button type="button" class="btn btn-default"><i class="fa fa-plus"></i></button></th> -->
                         </tr>
                     </thead>
 
@@ -219,11 +219,13 @@ $tour_name_error = $tour_type_error = $location1_error = "";
                                 ?>
                             </td>
                             <td><input type="number" class="form-control-plaintext number-hide" id="Location1_mintime" name="Location1_mintime" value="<?php echo $_POST['Location1_mintime']; ?>" readonly></td>
+							<!--
                             <td>
                                 <button type="button" class="btn btn-default" onclick="">
                                     <i class="fa fa-close"></i>
                                 </button>
                             </td>
+							<-->
                         </tr>
 
                         <tr>
@@ -248,11 +250,13 @@ $tour_name_error = $tour_type_error = $location1_error = "";
                                 </select>
                             </td>
                             <td><input type="number" class="form-control-plaintext number-hide" id="Location2_mintime" name="Location2_mintime" value="<?php echo $_POST['Location2_mintime']; ?>" readonly></td>
+							<!--
                             <td>
                                 <button type="button" class="btn btn-default" onclick="">
                                     <i class="fa fa-close"></i>
                                 </button>
                             </td>
+							-->
                         </tr>
 
                         <tr>
@@ -278,11 +282,13 @@ $tour_name_error = $tour_type_error = $location1_error = "";
                                 </select>
                             </td>
                             <td><input type="number" class="form-control-plaintext number-hide" id="Location3_mintime" name="Location3_mintime" value="<?php echo $_POST['Location3_mintime']; ?>" readonly></td>
+							<!--
                             <td>
                                 <button type="button" class="btn btn-default" onclick="">
                                     <i class="fa fa-close"></i>
                                 </button>
                             </td>
+							<-->
                         </tr>
                     </tbody>
                 </table>
@@ -329,7 +335,7 @@ $tour_name_error = $tour_type_error = $location1_error = "";
                 
             <!-- Location Table -->
 
-            <button type="submit" class="btn btn-primary btn-block">Add New Tour</button>
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
         </form>
     </div>
 
