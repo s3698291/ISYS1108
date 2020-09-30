@@ -114,9 +114,9 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     <?php include 'header.php'; ?>
 
     <!-- Edit Location Field -->
-    <h1 class="text-center mt-3">Edit Location</h1>
 
-    <div class="container">
+    <div class="container sticky-footer">
+		<h1 class="text-center mt-3">Edit Location</h1>
 
         <!-- Form shows only when user selects location -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
@@ -172,7 +172,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 </div>
             </div>
                 
-            <button id="UpdateButton" type="submit" class="btn btn-primary btn-block">Submit</button>
+            <button id="UpdateButton" type="submit" class="btn btn-primary btn-block">Save Changes</button>
         </form>
     </div>
 
