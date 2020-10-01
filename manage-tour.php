@@ -60,7 +60,7 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     <?php include 'header.php'; ?>
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3"> Manage Tours </h1>
+		<h2> Manage Tours </h2>
 		
         <!-- Recover/Remove/Edit Tour Validation -->
         <?php

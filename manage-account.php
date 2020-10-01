@@ -62,7 +62,7 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     <!-- View Account field -->
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3"> Manage Account </h1>
+		<h2"> Manage Account </h2>
 		
 		<!-- Activate/Deactivate/Edit Account Validation -->
 		<?php 

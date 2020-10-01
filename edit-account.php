@@ -133,7 +133,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 	
 	<!-- Edit Account Field -->
 	<div class="container sticky-footer">
-		<h1 class="text-center mt-3">Edit Account</h1>
+		<h2">Edit Account</h2>
 		
 		<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
 			<input type="hidden" id="id" name="id" value="<?php echo !empty($_POST['id']) ? $_POST['id'] : $_GET['id']; ?>">

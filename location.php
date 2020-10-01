@@ -90,7 +90,8 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     <!-- Location Fields -->
     
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3">Add Location</h1>
+        <div class="form-container">
+		<h2>Add Location</h2>
 		
         <?php 
         if ($location_Added === TRUE) {
@@ -154,10 +155,11 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
                         </p>
                     </div>
                 </div>
-                
+                <br>
                 <button type="submit" name="submit" class="btn btn-primary btn-block">Submit</button>
             </div>
         </form>
+    </div>
     </div>
     <!-- Location Fields -->
 

@@ -32,7 +32,7 @@ if (!isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] != 'TRUE') {
     <?php include 'header.php'; ?>
  
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3"> View Existing Locations </h1>
+		<h2> View Existing Locations </h2>
 		
         <?php
         if ($_SESSION['m02_location_not_found'] === TRUE) {

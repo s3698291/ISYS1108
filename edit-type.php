@@ -93,7 +93,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     <!-- Edit Type Field -->
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3">Edit Tour Type</h1>
+    <div class="form-container">
+		<h2>Edit Tour Type</h2>
 
         <!-- Form shows only when user selects tour type -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
@@ -115,6 +116,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 
             <button id="UpdateButton" type="submit" class="btn btn-primary btn-block">Save Changes</button>
         </form>
+    </div>
     </div>
 
     <!-- Edit Type Field -->

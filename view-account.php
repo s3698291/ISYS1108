@@ -34,7 +34,7 @@ if (!isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] != 'TRUE') {
     <!-- View Account field -->
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3"> View Existing Accounts </h1>
+		<h2> View Existing Accounts </h2>
 		
 		<?php
         if ($_SESSION['m02_account_not_found'] === TRUE) {

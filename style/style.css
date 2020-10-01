@@ -1,3 +1,41 @@
 .bg-back {
-    background-color: #004282;
+    background-color: #026670;
 }
+
+.login-left-box{
+    height: 100%;
+    margin-top: 15%;
+}
+
+.login-box{
+
+    height: auto;
+    margin: 5% auto;
+    
+  }
+
+.form-container {
+    margin: auto;
+    width: 80%;
+
+}
+
+.navbar-brand{
+    font-size: 20px;
+	font-weight: bold;
+    font-family: "Helvetica";
+    
+}
+
+.navbar-nav{
+    position: right;
+}
+
+.login-btn-block{
+    margin: 5% 30%;
+    width: 40%;
+    border-radius: 1rem;
+    color: rgb(0, 0, 0);
+    background-color: #eee25b;
+}
+

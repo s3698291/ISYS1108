@@ -115,7 +115,8 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == TRUE) {
     <!-- Tour Fields -->
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3">Add Tour</h1>
+    <div class="form-container">
+		<h2>Add Tour</h2>
 		
         <?php
         if ($tour_Added === TRUE) {
@@ -334,9 +335,11 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == TRUE) {
 
                 
             <!-- Location Table -->
-
+            
             <button type="submit" class="btn btn-primary btn-block">Submit</button>
+             
         </form>
+        </div>
     </div>
 
     <!-- Tour Fields -->

@@ -62,7 +62,8 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     <!-- Tour Type Fields -->
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3">Add Tour Type</h1>
+    <div class="form-container">
+		<h2>Add Tour Type</h2>
 		
         <?php
         if ($type_Added === TRUE) {
@@ -93,6 +94,7 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
             
             <button type="submit" class="btn btn-primary btn-block">Submit</button>
         </form>
+    </div>
     </div>
 
     <!-- Tour Type Fields -->

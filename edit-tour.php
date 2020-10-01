@@ -140,7 +140,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     <!-- Edit Location Field -->
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3">Edit Tour</h1>
+    <div class="form-container">
+		<h2>Edit Tour</h2>
 		
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
             <input type="hidden" id="id" name="id" value="<?php echo !empty($_POST['id']) ? $_POST['id'] : $_GET['id']; ?>">
@@ -363,6 +364,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
             <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
         </form>
+    </div>
     </div>
 
     <?php include 'footer.php'; ?>

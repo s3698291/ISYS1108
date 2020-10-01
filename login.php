@@ -106,6 +106,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     <!-- Login Form -->
 
     <div class="container sticky-footer">
+        <div class="row">
+            <div class="col-md-6 login-left-box">
+                <h2>Welcome to <br>Tour Managemenet System</h2>
+                <p>login as Admin/Assistant to start your session</p>
+            </div>
+            
+        <div class="col-md-6 login-box">
 		<h1 class="text-center mt-3">Login</h1>
 		
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
@@ -155,9 +162,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 </p>
             </div>
                 
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
+            <button type="submit" class="btn btn-primary login-btn-block">Login</button>
 
         </form>
+        </div>
+        </div>
     </div>
     <!-- Login Form -->
 

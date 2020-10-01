@@ -104,7 +104,7 @@ if (isset($_SESSION['m02_loggedIn']) && $_SESSION['m02_loggedIn'] == 'TRUE') {
     <!-- Register Account field -->
 
     <div class="container sticky-footer">
-		<h1 class="text-center mt-3"> Register Account </h1>
+		<h2> Register Account </h2>
 		
         <?php 
         if ($registered === TRUE) {
